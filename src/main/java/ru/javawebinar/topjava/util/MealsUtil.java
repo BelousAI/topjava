@@ -7,24 +7,23 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
+    public static final List<Meal> MEALS = Collections.synchronizedList(new ArrayList<>());
 
-    public static final List<Meal> MEALS = Arrays.asList(
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-            new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-    );
+    static {
+        MEALS.add(new Meal(1,LocalDateTime.of(2020, Month.JANUARY, 30,10,0), "Завтрак",500));
+        MEALS.add(new Meal(2,LocalDateTime.of(2020, Month.JANUARY, 30,13,0), "Обед",1000));
+        MEALS.add(new Meal(3,LocalDateTime.of(2020, Month.JANUARY, 30,20,0), "Ужин",500));
+        MEALS.add(new Meal(4,LocalDateTime.of(2020, Month.JANUARY, 31,0,0), "Еда на граничное значение",100));
+        MEALS.add(new Meal(5,LocalDateTime.of(2020, Month.JANUARY, 31,10,0), "Завтрак",1000));
+        MEALS.add(new Meal(6,LocalDateTime.of(2020, Month.JANUARY, 31,13,0), "Обед",500));
+        MEALS.add(new Meal(7,LocalDateTime.of(2020, Month.JANUARY, 31,20,0), "Ужин",410));
+    }
 
     public static List<MealTo> getTosList(List<Meal> meals, int caloriesPerDay) {
         return filteredByStreams(meals, caloriesPerDay, meal -> true);
@@ -48,6 +47,6 @@ public class MealsUtil {
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
