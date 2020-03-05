@@ -21,7 +21,7 @@ public class UsersUtil {
 
     public static List<User> getUsers(Collection<User> users) {
         return users.stream()
-                .sorted(Comparator.comparing(User::getName))
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 }

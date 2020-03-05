@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -26,49 +25,54 @@ public class InMemoryMealRepository implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(this::save);
-//        Meal testMeal = MealsUtil.MEALS.get(0);
-//        testMeal.setUserId(2);
-//        log.info("list contains: {}", MealsUtil.MEALS);
+        //MealsUtil.MEALS.forEach(this::save);
+        for (Meal meal : MealsUtil.MEALS) {
+            save(meal, 1);
+        }
+        log.info("list contains: {}", MealsUtil.MEALS);
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int userId) {
         log.info("save {}", meal);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(authUserId());
+            meal.setUserId(userId);
             repository.put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
-        if (meal.getUserId() != authUserId()) {
+        if (meal.getUserId() != userId) {
             return null;
         }
         return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        return repository.remove(id) != null; // Why does this method return a boolean type?
+        Meal result = repository.get(id);
+        if (result != null && result.getUserId() == userId) {
+            return repository.remove(id) != null; // Why does this method return a boolean type?
+        }
+        return false;
     }
 
     @Override
-    public Meal get(int id) {
+    public Meal get(int id, int userId) {
         log.info("get {}", id);
         Meal result = repository.get(id);
-        if (result != null && result.getUserId() == authUserId()) {
+        if (result != null && result.getUserId() == userId) {
             return result;
         }
         return null;
     }
 
     @Override
-    public List<Meal> getAll() {
+    public List<Meal> getAll(int userId) {
         log.info("getAll");
         return repository.values().stream()
-                .filter(meal -> meal.getUserId() == authUserId())
+                .filter(meal -> meal.getUserId() == userId)
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
