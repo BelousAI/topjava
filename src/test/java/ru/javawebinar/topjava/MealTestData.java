@@ -1,8 +1,6 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -24,6 +22,13 @@ public class MealTestData {
 
     public static Meal getNew() {
         return new Meal(null, LocalDateTime.now(), "mealDescription", 1000);
+    }
+
+    public static Meal getUpdated() {
+        Meal updated = new Meal(USER_MEAL);
+        updated.setDescription("Updated");
+        updated.setCalories(555);
+        return updated;
     }
 
     public static void assertMatch(Meal actual, Meal expected) {
